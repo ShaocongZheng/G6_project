@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div id="container"></div>
+    <div id="container">
+      <Switch size="large"
+              false-color="orange">
+        <span slot="open">编辑</span>
+        <span slot="close">预览</span>
+      </Switch>
+    </div>
   </div>
 </template>
 
@@ -11,9 +17,10 @@ export default {
   components: {
     // Editor
   },
-  data() {
+  data () {
     return {
       data: {
+        value: [20, 50],
         nodes: [
           {
             id: 'node1',
@@ -21,52 +28,14 @@ export default {
             x: 150,
             y: 150,
             size: 100
-            // height: 150,
-            // width: 150,
-            // anchorPoints: [
-            //   [0, 0],
-            //   [0.25, 0],
-            //   [0.5, 0],
-            //   [0.75, 0],
-            //   [1, 0],
-            //   [1, 0.25],
-            //   [1, 0.5],
-            //   [1, 0.75],
-            //   [1, 1],
-            //   [0.75, 1],
-            //   [0.5, 1],
-            //   [0.25, 1],
-            //   [0, 1],
-            //   [0, 0.75],
-            //   [0, 0.5],
-            //   [0, 0.25]
-            // ]
+
           },
           {
             id: 'node2',
             label: 'Circle2',
             x: 400,
             y: 150
-            // height: 150,
-            // width: 150,
-            // anchorPoints: [
-            //   [0, 0],
-            //   [0.25, 0],
-            //   [0.5, 0],
-            //   [0.75, 0],
-            //   [1, 0],
-            //   [1, 0.25],
-            //   [1, 0.5],
-            //   [1, 0.75],
-            //   [1, 1],
-            //   [0.75, 1],
-            //   [0.5, 1],
-            //   [0.25, 1],
-            //   [0, 1],
-            //   [0, 0.75],
-            //   [0, 0.5],
-            //   [0, 0.25]
-            // ]
+
           }
         ],
         edges: [
@@ -78,9 +47,9 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     // 阻止浏览器默认右键菜单
-    document.oncontextmenu = function(event) {
+    document.oncontextmenu = function (event) {
       if (event.stopPropagation) {
         event.stopPropagation()
       }
@@ -89,7 +58,7 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     /**
      * 该案例演示切换交互模式，在不同模式下实现拖动节点、增加节点、增加边的交互行为。
      */
@@ -97,14 +66,14 @@ export default {
     // Register a custom behavior: add a node when user click the blank part of canvas
     G6.registerBehavior('click-add-node', {
       // Set the events and the corresponding responsing function for this behavior
-      getEvents() {
+      getEvents () {
         // The event is canvas:click, the responsing function is onClick
         return {
           'canvas:click': 'onClick'
         }
       },
       // Click event
-      onClick(ev) {
+      onClick (ev) {
         const self = this
         const graph = self.graph
         // Add a new node
@@ -121,7 +90,7 @@ export default {
     // Register a custom behavior: click two end nodes to add an edge
     G6.registerBehavior('click-add-edge', {
       // Set the events and the corresponding responsing function for this behavior
-      getEvents() {
+      getEvents () {
         return {
           'node:click': 'onClick', // The event is canvas:click, the responsing function is onClick
           mousemove: 'onMousemove', // The event is mousemove, the responsing function is onMousemove
@@ -130,7 +99,7 @@ export default {
         }
       },
       // The responsing function for node:click defined in getEvents
-      onClick(ev) {
+      onClick (ev) {
         const self = this
         const node = ev.item
         const graph = self.graph
@@ -153,10 +122,10 @@ export default {
           self.addingEdge = true
         }
         console.log(ev)
-        graph.setItemState(ev, 'hover', true)
+        graph.setItemState(ev.item, 'hover1', true)
       },
       // The responsing function for mousemove defined in getEvents
-      onMousemove(ev) {
+      onMousemove (ev) {
         const self = this
         // The current position the mouse clicks
         const point = { x: ev.x, y: ev.y }
@@ -168,8 +137,8 @@ export default {
         }
       },
       // The responsing function for edge:click defined in getEvents
-      onEdgeClick(ev) {
-        console.log(ev)
+      onEdgeClick (ev) {
+        console.log(1)
         const self = this
         const currentEdge = ev.item
         if (self.addingEdge && self.edge === currentEdge) {
@@ -178,7 +147,7 @@ export default {
           self.addingEdge = false
         }
       },
-      onMouseover(ev) {
+      onMouseover (ev) {
         console.log(ev)
       }
     })
@@ -209,14 +178,7 @@ export default {
           source: 'node1'
         }
       ],
-      stateStyles: {
-        hover: {
-          fill: '#d3adf7',
-          'node1': {
-            fontSize: 15
-          }
-        }
-      },
+
     }
 
     const graphContainer = document.getElementById('container')
@@ -251,7 +213,8 @@ export default {
           'drag-node',
           'click-select',
           'drag-canvas',
-          { type: 'brush-select' }
+          'zoom-canvas',
+          { type: 'brush-select', }
         ],
         // Adding node mode
         addNode: ['click-add-node', 'click-select'],
@@ -266,7 +229,17 @@ export default {
           lineWidth: 2,
           fill: 'steelblue'
         }
-      }
+      },
+      nodeStateStyles: {
+        hover1: {
+          fill: 'green',
+          fontSize: 20,
+          label: 'nnnnnn',
+          'node1': {
+
+          }
+        }
+      },
     })
     graph.data(data)
     graph.render()
